@@ -1,5 +1,4 @@
 import React from 'react'
-import { getAuth } from "firebase/auth";
 import { motion } from "motion/react"
 import {
     FaUserTie,
@@ -28,53 +27,32 @@ function Step1SetUp({ onStart }) {
     const [analyzing, setAnalyzing] = useState(false);
 
 
- const handleUploadResume = async () => {
-  if (!resumeFile || analyzing) return;
-  setAnalyzing(true);
+const handleUploadResume = async () => {
+        if (!resumeFile || analyzing) return;
+        setAnalyzing(true)
 
-  try {
-    const auth = getAuth();
-    const user = auth.currentUser;
+        const formdata = new FormData()
+        formdata.append("resume", resumeFile)
 
-    if (!user) {
-      console.log("User not logged in");
-      setAnalyzing(false);
-      return;
+        try {
+            const result = await axios.post(ServerUrl + "/api/interview/resume", formdata, )
+
+            console.log(result.data)
+
+            setRole(result.data.role || "");
+            setExperience(result.data.experience || "");
+            setProjects(result.data.projects || []);
+            setSkills(result.data.skills || []);
+            setResumeText(result.data.resumeText || "");
+            setAnalysisDone(true);
+
+            setAnalyzing(false);
+
+        } catch (error) {
+            console.log("ERROR:", error.response?.data)
+            setAnalyzing(false);
+        }
     }
-
-    // 🔥 STEP 1: Get Firebase token
-    const token = await user.getIdToken();
-
-    const formdata = new FormData();
-    formdata.append("resume", resumeFile);
-
-    // 🔥 STEP 2: Send token to backend
-    const result = await axios.post(
-      ServerUrl + "/api/interview/resume",
-      formdata,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
-
-    console.log(result.data);
-
-    setRole(result.data.role || "");
-    setExperience(result.data.experience || "");
-    setProjects(result.data.projects || []);
-    setSkills(result.data.skills || []);
-    setResumeText(result.data.resumeText || "");
-    setAnalysisDone(true);
-
-  } catch (error) {
-    console.log("ERROR:", error.response?.data);
-  } finally {
-    setAnalyzing(false);
-  }
-};
-
     const handleStart = async () => {
         setLoading(true)
         try {
