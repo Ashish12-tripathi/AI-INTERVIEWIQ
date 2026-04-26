@@ -49,7 +49,7 @@ function Step1SetUp({ onStart }) {
             setAnalyzing(false);
 
         } catch (error) {
-            console.log(error)
+            console.log("ERROR:", error.response?.data)
             setAnalyzing(false);
         }
     }
