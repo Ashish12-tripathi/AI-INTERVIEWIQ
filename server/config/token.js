@@ -1,8 +1,13 @@
-import admin from "firebase-admin";
-import serviceAccount from "./serviceAccountKey.json" assert { type: "json" };
+import jwt from "jsonwebtoken"
 
-admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount),
-});
+const genToken = async (userId) => {
+    try {
+        const token = jwt.sign({userId} , process.env.JWT_SECRET , {expiresIn:"7d"})
+return token
+    } catch (error) {
+        console.log(error)
+    }
 
-export default admin;
+}
+
+export default genToken
