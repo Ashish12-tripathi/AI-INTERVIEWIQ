@@ -1,25 +1,31 @@
-import admin from "firebase-admin";
+import jwt from "jsonwebtoken";
 
 const isAuth = async (req, res, next) => {
   try {
-    const authHeader = req.headers.authorization;
+    const { token } = req.cookies;
 
-    // 🔴 No token
-    if (!authHeader || !authHeader.startsWith("Bearer ")) {
-      return res.status(400).json({ message: "user does not have a token" });
+    // ❌ No token
+    if (!token) {
+      return res.status(401).json({ message: "User does not have a token" });
     }
 
-    const token = authHeader.split(" ")[1];
+    // ✅ Verify token
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-    // 🔥 Verify Firebase token
-    const decoded = await admin.auth().verifyIdToken(token);
+    // ❌ Invalid token
+    if (!decoded) {
+      return res.status(401).json({ message: "Invalid token" });
+    }
 
-    req.userId = decoded.uid; // Firebase user ID
+    // ✅ Attach userId to request
+    req.userId = decoded.userId;
 
     next();
-
   } catch (error) {
-    return res.status(401).json({ message: "Invalid or expired token" });
+    console.log("isAuth error:", error);
+    return res.status(500).json({
+      message: `isAuth error: ${error.message}`,
+    });
   }
 };
 
