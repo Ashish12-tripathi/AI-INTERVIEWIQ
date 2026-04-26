@@ -1,4 +1,5 @@
 import React from 'react'
+import { getAuth } from "firebase/auth";
 import { motion } from "motion/react"
 import {
     FaUserTie,
