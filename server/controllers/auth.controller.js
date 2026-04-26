@@ -12,6 +12,7 @@ export const googleAuth = async (req,res) => {
                 email
             })
         }
+        const token = await genToken(user._id);
      res.cookie("token", token, {
     httpOnly: true,      
     secure: false,        
