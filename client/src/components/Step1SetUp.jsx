@@ -35,7 +35,7 @@ const handleUploadResume = async () => {
         formdata.append("resume", resumeFile)
 
         try {
-            const result = await axios.post(ServerUrl + "/api/interview/resume", formdata, )
+            const result = await axios.post(ServerUrl + "/api/interview/resume", formdata, {withCredentials:true})
 
             console.log(result.data)
 
